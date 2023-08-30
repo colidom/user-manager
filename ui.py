@@ -1,4 +1,6 @@
-from tkinter import Tk, Button
+import database as db
+from tkinter import *
+from tkinter import ttk
 
 
 class CenterWidgetMixin:
@@ -21,8 +23,53 @@ class MainWindow(Tk, CenterWidgetMixin):
         self.center()
 
     def build(self):
-        button = Button(self, text="Hello", command=self.hello)
-        button.pack()
+        # Top Frame
+        frame = Frame(self)
+        frame.pack()
+
+        # Treeview
+        treeview = ttk.Treeview(frame)
+        treeview["columns"] = ("DNI", "Name", "Surname")
+
+        # Column format
+        treeview.column("#0", width=0, stretch=NO)
+        treeview.column("DNI", anchor=CENTER)
+        treeview.column("Name", anchor=CENTER)
+        treeview.column("Surname", anchor=CENTER)
+
+        # Heading format
+        treeview.heading("#0", anchor=CENTER)
+        treeview.heading("DNI", text="DNI", anchor=CENTER)
+        treeview.heading("Name", text="Name", anchor=CENTER)
+        treeview.heading("Surname", text="Surname", anchor=CENTER)
+
+        # Scrollbar
+        scrollbar = Scrollbar(frame)
+        scrollbar.pack(side=RIGHT, fill=Y)
+        treeview["yscrollcommand"] = scrollbar.set
+
+        for customer in db.Customers.customers_list:
+            treeview.insert(
+                parent="",
+                index="end",
+                iid=customer.dni,
+                values=(customer.dni, customer.name, customer.surname),
+            )
+
+        # Pack
+        treeview.pack()
+
+        # Bottom Frame
+        frame = Frame(self)
+        frame.pack(pady=20)
+
+        # Buttons
+        Button(frame, text="Create", command=None).grid(row=0, column=0)
+        Button(frame, text="Modify", command=None).grid(row=0, column=1)
+        Button(frame, text="Delete", command=None).grid(row=0, column=2)
+
+        # Export treeview to the class
+        self.treeview = treeview
 
     def hello(self):
         print("hello")
