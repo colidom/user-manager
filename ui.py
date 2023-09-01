@@ -1,6 +1,7 @@
 import database as db
 from tkinter import *
 from tkinter import ttk
+from tkinter.messagebox import askokcancel, WARNING
 
 
 class CenterWidgetMixin:
@@ -66,13 +67,23 @@ class MainWindow(Tk, CenterWidgetMixin):
         # Buttons
         Button(frame, text="Create", command=None).grid(row=0, column=0)
         Button(frame, text="Modify", command=None).grid(row=0, column=1)
-        Button(frame, text="Delete", command=None).grid(row=0, column=2)
+        Button(frame, text="Delete", command=self.delete).grid(row=0, column=2)
 
         # Export treeview to the class
         self.treeview = treeview
 
-    def hello(self):
-        print("hello")
+    def delete(self):
+        customer = self.treeview.focus()
+        if customer:
+            fields = self.treeview.item(customer, "values")
+            confirm = askokcancel(
+                title="Confirmation",
+                message=f"¿Are you sure you want to eliminate {fields[1]} {fields[2]}?",
+                icon=WARNING,
+            )
+        if confirm:
+            # remove the row
+            self.treeview.delete(customer)
 
 
 if __name__ == "__main__":
