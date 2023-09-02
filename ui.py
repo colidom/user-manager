@@ -1,7 +1,10 @@
 import database as db
+import helpers
 from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import askokcancel, WARNING
+
+KEY_RELEASE = "<KeyRelease>"
 
 
 class CenterWidgetMixin:
@@ -40,9 +43,14 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
         dni = Entry(frame)
         name = Entry(frame)
         surname = Entry(frame)
+
         dni.grid(row=1, column=0)
         name.grid(row=1, column=1)
         surname.grid(row=1, column=2)
+
+        dni.bind(KEY_RELEASE, lambda event: self.validate(event, 0))
+        name.bind(KEY_RELEASE, lambda event: self.validate(event, 1))
+        surname.bind(KEY_RELEASE, lambda event: self.validate(event, 2))
 
         # Bottom frame
         frame = Frame(self)
@@ -60,6 +68,16 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
     def close(self):
         self.destroy()
         self.update()
+
+    def validate(self, event, index):
+        value = event.widget.get()
+        # Validate the dni if it is the first field or textual for the other two fields
+        valid = (
+            helpers.validate_dni(value, db.Customers.customers_list)
+            if index == 0
+            else (value.isalpha() and len(value) >= 3 and len(value) <= 30)
+        )
+        event.widget.configure({"bg": "Green" if valid else "Red"})
 
 
 class MainWindow(Tk, CenterWidgetMixin):
