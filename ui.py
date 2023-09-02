@@ -63,6 +63,7 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
         Button(frame, text="Cancel", command=self.close).grid(row=0, column=1)
 
     def create_customer(self):
+        # TODO document why this method is empty
         pass
 
     def close(self):
