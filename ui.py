@@ -16,6 +16,52 @@ class CenterWidgetMixin:
         self.geometry(f"{width}x{height}+{x}+{y}")
 
 
+class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Create customer")
+        self.build()
+        self.center()
+        # Forcing the user to interact with the subwindow
+        self.transient(parent)
+        self.grab_set()
+
+    def build(self):
+        # Top frame
+        frame = Frame(self)
+        frame.pack(padx=20, pady=10)
+
+        # Labels
+        Label(frame, text="DNI (8 int 1 upper char)").grid(row=0, column=0)
+        Label(frame, text="Name (2 to 30 chars)").grid(row=0, column=1)
+        Label(frame, text="Surname (2 to 30 chars)").grid(row=0, column=2)
+
+        # Entries
+        dni = Entry(frame)
+        name = Entry(frame)
+        surname = Entry(frame)
+        dni.grid(row=1, column=0)
+        name.grid(row=1, column=1)
+        surname.grid(row=1, column=2)
+
+        # Bottom frame
+        frame = Frame(self)
+        frame.pack(pady=10)
+
+        # Buttons
+        create = Button(frame, text="Create", command=self.create_customer)
+        create.configure(state=DISABLED)
+        create.grid(row=0, column=0)
+        Button(frame, text="Cancel", command=self.close).grid(row=0, column=1)
+
+    def create_customer(self):
+        pass
+
+    def close(self):
+        self.destroy()
+        self.update()
+
+
 class MainWindow(Tk, CenterWidgetMixin):
     def __init__(self):
         super().__init__()  # Inheritance of methods of class Tk
@@ -65,7 +111,7 @@ class MainWindow(Tk, CenterWidgetMixin):
         frame.pack(pady=20)
 
         # Buttons
-        Button(frame, text="Create", command=None).grid(row=0, column=0)
+        Button(frame, text="Create", command=self.create).grid(row=0, column=0)
         Button(frame, text="Modify", command=None).grid(row=0, column=1)
         Button(frame, text="Delete", command=self.delete).grid(row=0, column=2)
 
@@ -84,6 +130,9 @@ class MainWindow(Tk, CenterWidgetMixin):
         if confirm:
             # remove the row
             self.treeview.delete(customer)
+
+    def create(self):
+        CustomerCreationWindow(self)
 
 
 if __name__ == "__main__":
