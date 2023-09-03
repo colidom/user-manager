@@ -62,9 +62,20 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
         create.grid(row=0, column=0)
         Button(frame, text="Cancel", command=self.close).grid(row=0, column=1)
 
+        self.validations = [0, 0, 0]
+        self.create = create
+        self.dni = dni
+        self.name = name
+        self.surname = surname
+
     def create_customer(self):
-        # TODO document why this method is empty
-        pass
+        self.master.treeview.insert(
+            parent="",
+            index="end",
+            iid=self.dni.get(),
+            values=(self.dni.get(), self.name.get(), self.surname.get()),
+        )
+        self.close()
 
     def close(self):
         self.destroy()
@@ -79,6 +90,10 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
             else (value.isalpha() and len(value) >= 3 and len(value) <= 30)
         )
         event.widget.configure({"bg": "Green" if valid else "Red"})
+
+        # Change status based on validations
+        self.validations[index] = valid
+        self.create.config(state=NORMAL if self.validations == [1, 1, 1] else DISABLED)
 
 
 class MainWindow(Tk, CenterWidgetMixin):
