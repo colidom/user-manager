@@ -15,3 +15,9 @@ python -m pytest
 ```
 pipenv run python -m pytest
 ```
+
+
+### Ejecutar servidor ``uvicorn``
+````
+pipenv run uvicorn api:app --reload
+````
