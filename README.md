@@ -11,3 +11,7 @@ python -v
 ```
 python -m pytest
 ```
+
+```
+pipenv run python -m pytest
+```
