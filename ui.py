@@ -75,6 +75,7 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
             iid=self.dni.get(),
             values=(self.dni.get(), self.name.get(), self.surname.get()),
         )
+        db.Customers.create(self.dni.get(), self.name.get(), self.surname.get())
         print(
             f"Customer {self.name.get()} {self.surname.get()} width DNI {self.dni.get()} successfully created!"
         )
@@ -157,6 +158,7 @@ class CustomerEditWindow(Toplevel, CenterWidgetMixin):
         self.master.treeview.item(
             customer, values=(self.dni.get(), self.name.get(), self.surname.get())
         )
+        db.Customers.update(self.dni.get(), self.name.get(), self.surname.get())
         print(f"Customer {customer} edited!")
         self.close()
 
@@ -243,6 +245,7 @@ class MainWindow(Tk, CenterWidgetMixin):
         if confirm:
             # remove the row
             self.treeview.delete(customer)
+            db.Customers.delete(fields[0])
             print(f"Customer {customer} deleted!")
 
     def create(self):
