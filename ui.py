@@ -68,12 +68,65 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
         self.name = name
         self.surname = surname
 
-    def create_customer(self):
-        self.master.treeview.insert(
-            parent="",
-            index="end",
-            iid=self.dni.get(),
-            values=(self.dni.get(), self.name.get(), self.surname.get()),
+
+class CustomerEditWindow(Toplevel, CenterWidgetMixin):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Edit customer")
+        self.build()
+        self.center()
+        # Forcing the user to interact with the subwindow
+        self.transient(parent)
+        self.grab_set()
+
+    def build(self):
+        # Top frame
+        frame = Frame(self)
+        frame.pack(padx=20, pady=10)
+
+        # Labels
+        Label(frame, text="DNI (Not editable)").grid(row=0, column=0)
+        Label(frame, text="Name (2 to 30 chars)").grid(row=0, column=1)
+        Label(frame, text="Surname (2 to 30 chars)").grid(row=0, column=2)
+
+        # Entries
+        dni = Entry(frame)
+        name = Entry(frame)
+        surname = Entry(frame)
+
+        dni.grid(row=1, column=0)
+        name.grid(row=1, column=1)
+        surname.grid(row=1, column=2)
+
+        name.bind(KEY_RELEASE, lambda event: self.validate(event, 0))
+        surname.bind(KEY_RELEASE, lambda event: self.validate(event, 1))
+
+        customer = self.master.treeview.focus()
+        fields = self.master.treeview.item(customer, 'values')
+        dni.insert(0, fields[0])
+        dni.config(state=DISABLED)
+        name.insert(1, fields[1])
+        surname.insert(2, fields[2])
+
+        # Bottom frame
+        frame = Frame(self)
+        frame.pack(pady=10)
+
+        # Buttons
+        edit = Button(frame, text="Edit", command=self.edit_customer)
+        edit.grid(row=0, column=0)
+        Button(frame, text="Cancel", command=self.close).grid(row=0, column=1)
+
+        self.validations = [1, 1]
+        self.edit = edit
+        self.dni = dni
+        self.name = name
+        self.surname = surname
+
+    def edit_customer(self):
+        customer = self.master.treeview.focus()
+        self.master.treeview.item(
+            customer, values=(self.dni.get(), self.name.get(), self.surname.get())
         )
         self.close()
 
@@ -84,16 +137,12 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
     def validate(self, event, index):
         value = event.widget.get()
         # Validate the dni if it is the first field or textual for the other two fields
-        valid = (
-            helpers.validate_dni(value, db.Customers.customers_list)
-            if index == 0
-            else (value.isalpha() and len(value) >= 3 and len(value) <= 30)
-        )
+        valid = value.isalpha() and len(value) >= 3 and len(value) <= 30
         event.widget.configure({"bg": "Green" if valid else "Red"})
 
         # Change status based on validations
         self.validations[index] = valid
-        self.create.config(state=NORMAL if self.validations == [1, 1, 1] else DISABLED)
+        self.edit.config(state=NORMAL if self.validations == [1, 1] else DISABLED)
 
 
 class MainWindow(Tk, CenterWidgetMixin):
@@ -146,7 +195,7 @@ class MainWindow(Tk, CenterWidgetMixin):
 
         # Buttons
         Button(frame, text="Create", command=self.create).grid(row=0, column=0)
-        Button(frame, text="Modify", command=None).grid(row=0, column=1)
+        Button(frame, text="Modify", command=self.edit).grid(row=0, column=1)
         Button(frame, text="Delete", command=self.delete).grid(row=0, column=2)
 
         # Export treeview to the class
@@ -167,6 +216,10 @@ class MainWindow(Tk, CenterWidgetMixin):
 
     def create(self):
         CustomerCreationWindow(self)
+
+    def edit(self):
+        if self.treeview.focus():
+            CustomerEditWindow(self)
 
 
 if __name__ == "__main__":
