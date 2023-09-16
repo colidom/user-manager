@@ -68,6 +68,35 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
         self.name = name
         self.surname = surname
 
+    def create_customer(self):
+        self.master.treeview.insert(
+            parent='',
+            index='end',
+            iid=self.dni.get(),
+            values=(self.dni.get(), self.name.get(), self.surname.get()),
+        )
+        print(
+            f"Customer {self.name.get()} {self.surname.get()} width DNI {self.dni.get()} successfully created!"
+        )
+        self.close()
+
+    def close(self):
+        self.destroy()
+        self.update()
+
+    def validate(self, event, index):
+        value = event.widget.get()
+        # Validar el dni si es el primer campo o textual para los otros dos
+        valid = (
+            helpers.validate_dni(value, db.Customers.customers_list)
+            if index == 0
+            else (value.isalpha() and len(value) >= 2 and len(value) <= 30)
+        )
+        event.widget.configure({"bg": "Green" if valid else "Red"})
+        # Change button status based on validations
+        self.validations[index] = valid
+        self.create.config(state=NORMAL if self.validations == [1, 1, 1] else DISABLED)
+
 
 class CustomerEditWindow(Toplevel, CenterWidgetMixin):
     def __init__(self, parent):
@@ -128,6 +157,7 @@ class CustomerEditWindow(Toplevel, CenterWidgetMixin):
         self.master.treeview.item(
             customer, values=(self.dni.get(), self.name.get(), self.surname.get())
         )
+        print(f"Customer {customer} edited!")
         self.close()
 
     def close(self):
@@ -213,6 +243,7 @@ class MainWindow(Tk, CenterWidgetMixin):
         if confirm:
             # remove the row
             self.treeview.delete(customer)
+            print(f"Customer {customer} deleted!")
 
     def create(self):
         CustomerCreationWindow(self)
