@@ -11,7 +11,7 @@ if __name__ == "__main__":
     else:
         print(
             """
-Wrong parameter use it as below:
+Wrong parameter, use it as below:
     python run.py -<arg>
     -t Terminal version
     -i Interface version
