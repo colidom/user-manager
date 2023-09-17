@@ -12,6 +12,9 @@ class Customer:
     def __str__(self) -> str:
         return f"({self.dni}) {self.name} {self.surname}"
 
+    def to_dict(self) -> dict:
+        return {'dni': self.dni, 'name': self.name, 'surname': self.surname}
+
 
 class Customers:
     customers_list: list = []
