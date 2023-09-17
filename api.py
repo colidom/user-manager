@@ -1,6 +1,22 @@
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, constr, validator
 import database as db
+import helpers
+
+
+class CustomerModel(BaseModel):
+    dni: constr(min_length=9, max_length=9)
+    name: constr(min_length=2, max_length=30)
+    surname: constr(min_length=2, max_length=30)
+
+
+class CustomerCreationModel(CustomerModel):
+    @validator('dni')
+    def validate_dni(cls, dni):
+        if helpers.validate_dni(dni, db.Customers.customers_list):
+            return dni
+        raise ValueError("Existing Customer or DNI is not correct!")
 
 
 HEADERS = {'content-type': 'charset=utf8'}
@@ -28,3 +44,14 @@ async def find_by_dni(dni: str):
         raise HTTPException(status_code=404, detail="Customer not found")
 
     return JSONResponse(content=customer.to_dict(), headers=HEADERS)
+
+
+@app.post('/customers/create')
+async def create_customer(data: CustomerCreationModel):
+    customer = db.Customers.create(data.dni, data.name, data.surname)
+
+    if customer:
+        return JSONResponse(content=customer.to_dict(), headers=HEADERS)
+    else:
+        # Client not created, returns a response with an appropriate message and status code 404
+        raise HTTPException(status_code=404, detail="Customer not created")
