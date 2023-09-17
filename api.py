@@ -14,23 +14,6 @@ async def index():
     return JSONResponse(content=content, headers=HEADERS, media_type='application/json')
 
 
-@app.get('/html/')
-async def html():
-    content = """
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <title>¡Hello World!</title>
-    </head>
-    <body>
-        <h1>¡Hola Mundo!</h1>
-    </body>
-    </html>
-    """
-    return Response(content=content, media_type='text/html')
-
-
 @app.get('/customers/')
 async def customers():
     content = [customer.to_dict() for customer in db.Customers.customers_list]
