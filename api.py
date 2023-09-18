@@ -5,18 +5,18 @@ import database as db
 import helpers
 
 
-class CustomerModel(BaseModel):
+class userModel(BaseModel):
     dni: constr(min_length=9, max_length=9)
     name: constr(min_length=2, max_length=30)
     surname: constr(min_length=2, max_length=30)
 
 
-class CustomerCreationModel(CustomerModel):
+class userCreationModel(userModel):
     @validator('dni')
     def validate_dni(cls, dni):
-        if helpers.validate_dni(dni, db.Customers.customers_list):
+        if helpers.validate_dni(dni, db.Users.users_list):
             return dni
-        raise ValueError("Existing Customer or DNI is not correct!")
+        raise ValueError("Existing User or DNI is not correct!")
 
 
 HEADERS = {'content-type': 'charset=utf8'}
@@ -33,48 +33,48 @@ async def index():
     return JSONResponse(content=content, headers=HEADERS, media_type='application/json')
 
 
-@app.get('/customers/', tags=["Customers"])
-async def customers():
-    content = [customer.to_dict() for customer in db.Customers.customers_list]
+@app.get('/users/', tags=["Users"])
+async def users():
+    content = [user.to_dict() for user in db.Users.users_list]
     return JSONResponse(content, headers=HEADERS)
 
 
-@app.get('/customers/find/{dni}', tags=["Customers"])
+@app.get('/users/find/{dni}', tags=["Users"])
 async def find_by_dni(dni: str):
-    customer = db.Customers.find(dni=dni)
-    if not customer:
+    user = db.Users.find(dni=dni)
+    if not user:
         # Client not found, returns a response with an appropriate message and status code 404
-        raise HTTPException(status_code=404, detail="Customer not found")
+        raise HTTPException(status_code=404, detail="User not found")
 
-    return JSONResponse(content=customer.to_dict(), headers=HEADERS)
+    return JSONResponse(content=user.to_dict(), headers=HEADERS)
 
 
-@app.post('/customers/create', tags=["Customers"])
-async def create_customer(data: CustomerCreationModel):
-    customer = db.Customers.create(data.dni, data.name, data.surname)
+@app.post('/users/create', tags=["Users"])
+async def create_user(data: userCreationModel):
+    user = db.Users.create(data.dni, data.name, data.surname)
 
-    if customer:
-        return JSONResponse(content=customer.to_dict(), headers=HEADERS)
+    if user:
+        return JSONResponse(content=user.to_dict(), headers=HEADERS)
     else:
         # Client not created, returns a response with an appropriate message and status code 404
-        raise HTTPException(status_code=404, detail="Customer not created")
+        raise HTTPException(status_code=404, detail="User not created")
 
 
-@app.put('/customers/update', tags=["Customers"])
-async def update_customer(data: CustomerModel):
-    if db.Customers.find(data.dni):
-        customer = db.Customers.update(data.dni, data.name, data.surname)
-        if customer:
-            return JSONResponse(content=customer.to_dict(), headers=HEADERS)
+@app.put('/users/update', tags=["Users"])
+async def update_user(data: userModel):
+    if db.Users.find(data.dni):
+        user = db.Users.update(data.dni, data.name, data.surname)
+        if user:
+            return JSONResponse(content=user.to_dict(), headers=HEADERS)
         else:
             # Client not found, returns a response with an appropriate message and status code 404
-            raise HTTPException(status_code=404, detail="Customer not found")
+            raise HTTPException(status_code=404, detail="User not found")
 
 
-@app.delete('/customers/delete/{dni}', tags=["Customers"])
-async def delete_customer(dni: str):
-    if db.Customers.find(dni):
-        customer = db.Customers.delete(dni=dni)
-        return JSONResponse(content=customer.to_dict(), headers=HEADERS)
+@app.delete('/users/delete/{dni}', tags=["Users"])
+async def delete_user(dni: str):
+    if db.Users.find(dni):
+        user = db.Users.delete(dni=dni)
+        return JSONResponse(content=user.to_dict(), headers=HEADERS)
     # Client not found, returns a response with an appropriate message and status code 404
-    raise HTTPException(status_code=404, detail="Customer not found")
+    raise HTTPException(status_code=404, detail="User not found")

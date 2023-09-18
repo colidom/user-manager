@@ -11,11 +11,11 @@ def show_options() -> None:
     print("========================")
     print("  Welcome to Manager ")
     print("========================")
-    print("[1] Customers List      ")
-    print("[2] Find Customer       ")
-    print("[3] Add Customer        ")
-    print("[4] Modify Customer     ")
-    print("[5] Delete Customer     ")
+    print("[1] Users List      ")
+    print("[2] Find User       ")
+    print("[3] Add User        ")
+    print("[4] Modify User     ")
+    print("[5] Delete User     ")
     print("[6] Close the Manager   ")
     print("========================")
 
@@ -31,12 +31,12 @@ def read_text(min_length: int = 0, max_length: int = 100, msg=None) -> str:
         )
 
 
-def validate_dni(dni: str, customers_list: list) -> bool:
+def validate_dni(dni: str, users_list: list) -> bool:
     if not re.match("\d{8}[A-Z]$", dni):
         print("Incorrect DNI, must comply with the format.")
         return False
-    for customer in customers_list:
-        if customer.dni == dni:
-            print("DNI used by another customer.")
+    for user in users_list:
+        if user.dni == dni:
+            print("DNI used by another user.")
             return False
     return True

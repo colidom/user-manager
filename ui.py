@@ -22,7 +22,7 @@ class CenterWidgetMixin:
 class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Create customer")
+        self.title("Create user")
         self.build()
         self.center()
         # Forcing the user to interact with the subwindow
@@ -75,9 +75,9 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
             iid=self.dni.get(),
             values=(self.dni.get(), self.name.get(), self.surname.get()),
         )
-        db.Customers.create(self.dni.get(), self.name.get(), self.surname.get())
+        db.Users.create(self.dni.get(), self.name.get(), self.surname.get())
         print(
-            f"Customer {self.name.get()} {self.surname.get()} width DNI {self.dni.get()} successfully created!"
+            f"User {self.name.get()} {self.surname.get()} width DNI {self.dni.get()} successfully created!"
         )
         self.close()
 
@@ -89,7 +89,7 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
         value = event.widget.get()
         # Validar el dni si es el primer campo o textual para los otros dos
         valid = (
-            helpers.validate_dni(value, db.Customers.customers_list)
+            helpers.validate_dni(value, db.Users.users_list)
             if index == 0
             else (value.isalpha() and len(value) >= 2 and len(value) <= 30)
         )
@@ -102,7 +102,7 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
 class CustomerEditWindow(Toplevel, CenterWidgetMixin):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Edit customer")
+        self.title("Edit user")
         self.build()
         self.center()
         # Forcing the user to interact with the subwindow
@@ -131,8 +131,8 @@ class CustomerEditWindow(Toplevel, CenterWidgetMixin):
         name.bind(KEY_RELEASE, lambda event: self.validate(event, 0))
         surname.bind(KEY_RELEASE, lambda event: self.validate(event, 1))
 
-        customer = self.master.treeview.focus()
-        fields = self.master.treeview.item(customer, 'values')
+        user = self.master.treeview.focus()
+        fields = self.master.treeview.item(user, 'values')
         dni.insert(0, fields[0])
         dni.config(state=DISABLED)
         name.insert(1, fields[1])
@@ -154,12 +154,12 @@ class CustomerEditWindow(Toplevel, CenterWidgetMixin):
         self.surname = surname
 
     def edit_customer(self):
-        customer = self.master.treeview.focus()
+        user = self.master.treeview.focus()
         self.master.treeview.item(
-            customer, values=(self.dni.get(), self.name.get(), self.surname.get())
+            user, values=(self.dni.get(), self.name.get(), self.surname.get())
         )
-        db.Customers.update(self.dni.get(), self.name.get(), self.surname.get())
-        print(f"Customer {customer} edited!")
+        db.Users.update(self.dni.get(), self.name.get(), self.surname.get())
+        print(f"User {user} edited!")
         self.close()
 
     def close(self):
@@ -180,7 +180,7 @@ class CustomerEditWindow(Toplevel, CenterWidgetMixin):
 class MainWindow(Tk, CenterWidgetMixin):
     def __init__(self):
         super().__init__()  # Inheritance of methods of class Tk
-        self.title("Customers Manager")
+        self.title("Users Manager")
         self.build()
         self.center()
 
@@ -210,12 +210,12 @@ class MainWindow(Tk, CenterWidgetMixin):
         scrollbar.pack(side=RIGHT, fill=Y)
         treeview["yscrollcommand"] = scrollbar.set
 
-        for customer in db.Customers.customers_list:
+        for user in db.Users.users_list:
             treeview.insert(
                 parent="",
                 index="end",
-                iid=customer.dni,
-                values=(customer.dni, customer.name, customer.surname),
+                iid=user.dni,
+                values=(user.dni, user.name, user.surname),
             )
 
         # Pack
@@ -234,9 +234,9 @@ class MainWindow(Tk, CenterWidgetMixin):
         self.treeview = treeview
 
     def delete(self):
-        customer = self.treeview.focus()
-        if customer:
-            fields = self.treeview.item(customer, "values")
+        user = self.treeview.focus()
+        if user:
+            fields = self.treeview.item(user, "values")
             confirm = askokcancel(
                 title="Confirmation",
                 message=f"¿Are you sure you want to eliminate {fields[1]} {fields[2]}?",
@@ -244,9 +244,9 @@ class MainWindow(Tk, CenterWidgetMixin):
             )
         if confirm:
             # remove the row
-            self.treeview.delete(customer)
-            db.Customers.delete(fields[0])
-            print(f"Customer {customer} deleted!")
+            self.treeview.delete(user)
+            db.Users.delete(fields[0])
+            print(f"User {user} deleted!")
 
     def create(self):
         CustomerCreationWindow(self)

@@ -1,6 +1,6 @@
 import helpers, database as db
 
-CUSTOMER_NOT_FOUND = "Customer not found❌"
+CUSTOMER_NOT_FOUND = "User not found❌"
 DNI_LENGTH = "DNI (8 int 1 char)"
 
 
@@ -17,7 +17,7 @@ def launch() -> None:
                 print("Leaving...\n")
                 break
             case "1":
-                print("Listing customers...\n", *db.Customers.customers_list, sep="\n")
+                print("Listing users...\n", *db.Users.users_list, sep="\n")
             case "2":
                 find_customer()
             case "3":
@@ -32,44 +32,42 @@ def launch() -> None:
 
 
 def find_customer() -> None:
-    print("Looking for a customer...\n")
+    print("Looking for a user...\n")
     dni = helpers.read_text(9, 9, DNI_LENGTH).upper()
-    customer = db.Customers.find(dni)
-    print(customer) if customer else print(CUSTOMER_NOT_FOUND)
+    user = db.Users.find(dni)
+    print(user) if user else print(CUSTOMER_NOT_FOUND)
 
 
 def add_customer() -> None:
-    print("Adding a customer...\n")
+    print("Adding a user...\n")
     dni = helpers.read_text(9, 9, DNI_LENGTH).upper()
-    if helpers.validate_dni(dni, db.Customers.customers_list):
+    if helpers.validate_dni(dni, db.Users.users_list):
         name = helpers.read_text(2, 30, "Name (2 int 30 char)").capitalize()
         surname = helpers.read_text(2, 30, "Surname (2 int 30 char)").capitalize()
-        db.Customers.create(dni, name, surname)
-        print("Customer added ✅")
+        db.Users.create(dni, name, surname)
+        print("User added ✅")
 
 
 def modify_customer() -> None:
-    print("Modifying a customer...\n")
+    print("Modifying a user...\n")
     dni = helpers.read_text(9, 9, DNI_LENGTH).upper()
-    customer = db.Customers.find(dni)
-    if customer:
-        modify_existing_customer(customer)
+    user = db.Users.find(dni)
+    if user:
+        modify_existing_customer(user)
     else:
         print(CUSTOMER_NOT_FOUND)
 
 
-def modify_existing_customer(customer: db.Customer) -> None:
-    name = helpers.read_text(2, 30, f"New name for {customer.name}: ").capitalize()
-    surname = helpers.read_text(
-        2, 30, f"New surname for {customer.surname}: "
-    ).capitalize()
-    db.Customers.update(customer.dni, name, surname)
-    print("Customer modified ✅")
+def modify_existing_customer(user: db.User) -> None:
+    name = helpers.read_text(2, 30, f"New name for {user.name}: ").capitalize()
+    surname = helpers.read_text(2, 30, f"New surname for {user.surname}: ").capitalize()
+    db.Users.update(user.dni, name, surname)
+    print("User modified ✅")
 
 
 def delete_customer() -> None:
-    print("Deleting a customer...\n")
+    print("Deleting a user...\n")
     dni = helpers.read_text(9, 9, DNI_LENGTH).upper()
-    print("Customer successfully deleted ✅") if db.Customers.delete(dni) else print(
+    print("User successfully deleted ✅") if db.Users.delete(dni) else print(
         CUSTOMER_NOT_FOUND
     )

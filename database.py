@@ -3,7 +3,7 @@ import config
 from typing import List
 
 
-class Customer:
+class User:
     def __init__(self, dni, name, surname) -> None:
         self.dni = dni
         self.name = name
@@ -16,50 +16,50 @@ class Customer:
         return {'dni': self.dni, 'name': self.name, 'surname': self.surname}
 
 
-class Customers:
-    customers_list: list = []
+class Users:
+    users_list: list = []
     with open(config.DATABASE_PATH, newline="\n") as file:
         reader = csv.reader(file, delimiter=";")
         for dni, name, surname in reader:
-            customer = Customer(dni, name, surname)
-            customers_list.append(customer)
+            user = User(dni, name, surname)
+            users_list.append(user)
 
     @staticmethod
-    def find(dni: str) -> Customer | None:
-        for customer in Customers.customers_list:
-            if customer.dni == dni:
-                return customer
+    def find(dni: str) -> User | None:
+        for user in Users.users_list:
+            if user.dni == dni:
+                return user
         return None
 
     @staticmethod
-    def create(dni: str, name: str, surname: str) -> Customer:
-        customer = Customer(dni, name, surname)
-        Customers.customers_list.append(customer)
-        Customers.save()
-        return customer
+    def create(dni: str, name: str, surname: str) -> User:
+        user = User(dni, name, surname)
+        Users.users_list.append(user)
+        Users.save()
+        return user
 
     @staticmethod
-    def update(dni: str, name: str, surname: str) -> List[Customer] | None:
-        for index, customer in enumerate(Customers.customers_list):
-            if customer.dni == dni:
-                Customers.customers_list[index].name = name
-                Customers.customers_list[index].surname = surname
-                Customers.save()
-                return Customers.customers_list[index]
+    def update(dni: str, name: str, surname: str) -> List[User] | None:
+        for index, user in enumerate(Users.users_list):
+            if user.dni == dni:
+                Users.users_list[index].name = name
+                Users.users_list[index].surname = surname
+                Users.save()
+                return Users.users_list[index]
         return None
 
     @staticmethod
-    def delete(dni: str) -> List[Customer] | None:
-        for index, customer in enumerate(Customers.customers_list):
-            if customer.dni == dni:
-                customer = Customers.customers_list.pop(index)
-                Customers.save()
-                return customer
+    def delete(dni: str) -> List[User] | None:
+        for index, user in enumerate(Users.users_list):
+            if user.dni == dni:
+                user = Users.users_list.pop(index)
+                Users.save()
+                return user
         return None
 
     @staticmethod
     def save() -> None:
         with open(config.DATABASE_PATH, "w", newline="\n") as file:
             writer = csv.writer(file, delimiter=";")
-            for customer in Customers.customers_list:
-                writer.writerow((customer.dni, customer.name, customer.surname))
+            for user in Users.users_list:
+                writer.writerow((user.dni, user.name, user.surname))
