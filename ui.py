@@ -116,8 +116,8 @@ class CustomerEditWindow(Toplevel, CenterWidgetMixin):
 
         # Labels
         Label(frame, text="DNI (Not editable)").grid(row=0, column=0)
-        Label(frame, text="Name (2 to 30 chars)").grid(row=0, column=1)
-        Label(frame, text="Surname (2 to 30 chars)").grid(row=0, column=2)
+        Label(frame, text="Name (3 to 30 chars)").grid(row=0, column=1)
+        Label(frame, text="Surname (3 to 30 chars)").grid(row=0, column=2)
 
         # Entries
         dni = Entry(frame)
