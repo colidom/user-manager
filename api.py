@@ -21,22 +21,25 @@ class CustomerCreationModel(CustomerModel):
 
 HEADERS = {'content-type': 'charset=utf8'}
 
-app = FastAPI()
+app = FastAPI(
+    title="User Manager API",
+    description="🍉Provides the different methods for making a CRUD in the application",
+)
 
 
-@app.get('/')
+@app.get('/', tags=["Generic"])
 async def index():
-    content = {'message': '¡Hello World!'}
+    content = {'message': '¡Hello! Welcome to User Manager API REST'}
     return JSONResponse(content=content, headers=HEADERS, media_type='application/json')
 
 
-@app.get('/customers/')
+@app.get('/customers/', tags=["Customers"])
 async def customers():
     content = [customer.to_dict() for customer in db.Customers.customers_list]
     return JSONResponse(content, headers=HEADERS)
 
 
-@app.get('/customers/find/{dni}')
+@app.get('/customers/find/{dni}', tags=["Customers"])
 async def find_by_dni(dni: str):
     customer = db.Customers.find(dni=dni)
     if not customer:
@@ -46,7 +49,7 @@ async def find_by_dni(dni: str):
     return JSONResponse(content=customer.to_dict(), headers=HEADERS)
 
 
-@app.post('/customers/create')
+@app.post('/customers/create', tags=["Customers"])
 async def create_customer(data: CustomerCreationModel):
     customer = db.Customers.create(data.dni, data.name, data.surname)
 
@@ -57,7 +60,7 @@ async def create_customer(data: CustomerCreationModel):
         raise HTTPException(status_code=404, detail="Customer not created")
 
 
-@app.put('/customers/update')
+@app.put('/customers/update', tags=["Customers"])
 async def update_customer(data: CustomerModel):
     if db.Customers.find(data.dni):
         customer = db.Customers.update(data.dni, data.name, data.surname)
@@ -68,7 +71,7 @@ async def update_customer(data: CustomerModel):
             raise HTTPException(status_code=404, detail="Customer not found")
 
 
-@app.delete('/customers/delete/{dni}')
+@app.delete('/customers/delete/{dni}', tags=["Customers"])
 async def delete_customer(dni: str):
     if db.Customers.find(dni):
         customer = db.Customers.delete(dni=dni)
