@@ -55,3 +55,14 @@ async def create_customer(data: CustomerCreationModel):
     else:
         # Client not created, returns a response with an appropriate message and status code 404
         raise HTTPException(status_code=404, detail="Customer not created")
+
+
+@app.put('/customers/update')
+async def update_customer(data: CustomerModel):
+    if db.Customers.find(data.dni):
+        customer = db.Customers.update(data.dni, data.name, data.surname)
+        if customer:
+            return JSONResponse(content=customer.to_dict(), headers=HEADERS)
+        else:
+            # Client not found, returns a response with an appropriate message and status code 404
+            raise HTTPException(status_code=404, detail="Customer not found")
