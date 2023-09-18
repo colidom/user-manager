@@ -36,8 +36,8 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
 
         # Labels
         Label(frame, text="DNI (8 int 1 upper char)").grid(row=0, column=0)
-        Label(frame, text="Name (2 to 30 chars)").grid(row=0, column=1)
-        Label(frame, text="Surname (2 to 30 chars)").grid(row=0, column=2)
+        Label(frame, text="Name (3 to 30 chars)").grid(row=0, column=1)
+        Label(frame, text="Surname (3 to 30 chars)").grid(row=0, column=2)
 
         # Entries
         dni = Entry(frame)
@@ -91,7 +91,7 @@ class CustomerCreationWindow(Toplevel, CenterWidgetMixin):
         valid = (
             helpers.validate_dni(value, db.Users.users_list)
             if index == 0
-            else (value.isalpha() and len(value) >= 2 and len(value) <= 30)
+            else (value.isalpha() and len(value) >= 3 and len(value) <= 30)
         )
         event.widget.configure({"bg": "Green" if valid else "Red"})
         # Change button status based on validations

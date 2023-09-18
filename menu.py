@@ -42,8 +42,8 @@ def add_customer() -> None:
     print("Adding a user...\n")
     dni = helpers.read_text(9, 9, DNI_LENGTH).upper()
     if helpers.validate_dni(dni, db.Users.users_list):
-        name = helpers.read_text(2, 30, "Name (2 int 30 char)").capitalize()
-        surname = helpers.read_text(2, 30, "Surname (2 int 30 char)").capitalize()
+        name = helpers.read_text(3, 30, "Name (3 int 30 char)").capitalize()
+        surname = helpers.read_text(3, 30, "Surname (3 int 30 char)").capitalize()
         db.Users.create(dni, name, surname)
         print("User added ✅")
 
@@ -59,8 +59,8 @@ def modify_customer() -> None:
 
 
 def modify_existing_customer(user: db.User) -> None:
-    name = helpers.read_text(2, 30, f"New name for {user.name}: ").capitalize()
-    surname = helpers.read_text(2, 30, f"New surname for {user.surname}: ").capitalize()
+    name = helpers.read_text(3, 30, f"New name for {user.name}: ").capitalize()
+    surname = helpers.read_text(3, 30, f"New surname for {user.surname}: ").capitalize()
     db.Users.update(user.dni, name, surname)
     print("User modified ✅")
 
