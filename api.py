@@ -66,3 +66,12 @@ async def update_customer(data: CustomerModel):
         else:
             # Client not found, returns a response with an appropriate message and status code 404
             raise HTTPException(status_code=404, detail="Customer not found")
+
+
+@app.delete('/customers/delete/{dni}')
+async def delete_customer(dni: str):
+    if db.Customers.find(dni):
+        customer = db.Customers.delete(dni=dni)
+        return JSONResponse(content=customer.to_dict(), headers=HEADERS)
+    # Client not found, returns a response with an appropriate message and status code 404
+    raise HTTPException(status_code=404, detail="Customer not found")
